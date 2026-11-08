@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>CodeSpace 4.0 - Laboratório de Depuração Espacial</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- ============================================================== -->
+    <!-- TELA DE INTRODUÇÃO (overlay que aparece ao abrir o jogo)        -->
+    <!-- Tem várias "páginas" navegáveis por setas                      -->
+    <!-- ============================================================== -->
+    <div id="introOverlay" class="intro-overlay">
+        <div class="intro-box">
+
+            <!-- PÁGINA 1: Boas-vindas e explicação do jogo -->
+            <div class="intro-page active" id="introPage1">
+                <h2>🚀 Bem-vindo ao CodeSpace!</h2>
+                <p>
+                    Você é um piloto espacial que controla sua nave através de
+                    <strong>código de programação</strong>. Escreva comandos para
+                    navegar pelo espaço, desviar de meteoros e alcançar o objetivo!
+                </p>
+                <h3>🕹️ Comandos Básicos</h3>
+                <div class="intro-commands">
+                    <div class="intro-cmd"><code>frente(N)</code> <span>Move a nave para a direita N vezes</span></div>
+                    <div class="intro-cmd"><code>tras(N)</code> <span>Move a nave para a esquerda N vezes</span></div>
+                    <div class="intro-cmd"><code>subir(N)</code> <span>Move a nave para cima N vezes</span></div>
+                    <div class="intro-cmd"><code>descer(N)</code> <span>Move a nave para baixo N vezes</span></div>
+                </div>
+                <h3>🔧 Funções Auxiliares</h3>
+                <div class="intro-commands">
+                    <div class="intro-cmd"><code>obterY()</code> <span>Retorna a altura atual da nave</span></div>
+                    <div class="intro-cmd"><code>obterX()</code> <span>Retorna a posição horizontal da nave</span></div>
+                    <div class="intro-cmd"><code>alinhado()</code> <span>Retorna true se a nave está na mesma altura do objetivo</span></div>
+                </div>
+                <p class="intro-hint">Use a seta para ver exemplos com condicionais →</p>
+            </div>
+
+            <!-- PÁGINA 2: Exemplo com condicionais e loops -->
+            <div class="intro-page" id="introPage2">
+                <h2>💻 Estruturas de Controle</h2>
+                <p>Além dos comandos básicos, você pode usar <strong>condicionais</strong> e <strong>laços</strong> para criar algoritmos mais inteligentes!</p>
+
+                <h3>📌 Exemplo com <code>if/else</code></h3>
+                <pre><code>// Verifica se a nave está alinhada com o objetivo
+if (alinhado()) {
+    frente(5);
+} else {
+    subir(3);
+    frente(5);
+}</code></pre>
+
+                <h3>📌 Exemplo com <code>for</code></h3>
+                <pre><code>// Repete um padrão de movimento 3 vezes
+for (let i = 0; i < 3; i++) {
+    frente(2);
+    subir(1);
+}</code></pre>
+
+                <h3>📌 Exemplo com <code>while</code></h3>
+                <pre><code>// Sobe até estar alinhado com o objetivo
+while (!alinhado()) {
+    subir(1);
+}
+frente(8);</code></pre>
+
+                <p class="intro-hint">← Volte para rever os comandos</p>
+            </div>
+
+            <!-- NAVEGAÇÃO: setas e botão de começar -->
+            <div class="intro-nav">
+                <button id="btnIntroPrev" class="intro-arrow" disabled>← Anterior</button>
+                <span id="introIndicator" class="intro-indicator">● ○</span>
+                <button id="btnIntroNext" class="intro-arrow">Próximo →</button>
+            </div>
+            <button id="btnIntroStart" class="btn-intro-start">🚀 Começar Missão!</button>
+        </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- INTERFACE PRINCIPAL DO JOGO                                     -->
+    <!-- ============================================================== -->
+    <h1>🚀 CodeSpace: Laboratório de Depuração</h1>
+    <p class="subtitle">Programe a rota da nave para alcançar o objetivo. Colete cristais de energia pelo caminho!</p>
+
+    <div class="game-container">
+
+        <!-- PAINEL ESQUERDO: Editor de código e controles -->
+        <div class="panel-code">
+            <div class="instructions">
+                <strong>🛠️ API do Piloto (Comandos e Funções):</strong><br>
+                    • <code>frente(N)</code>, <code>tras(N)</code> — Move para frente ou para trás N vezes.<br>
+                    • <code>subir(N)</code>, <code>descer(N)</code> — Propulsão vertical N vezes.<br>
+                    • <code>obterY()</code> — Altura da nave | <code>obterX()</code> — Posição X | <code>alinhado()</code> — Se está na altura do objetivo.<br>
+                    • <strong>Estruturas:</strong> Suporta <code>for</code>, <code>while</code> e condicionais <code>if/else</code>.
+            </div>
+
+            <!-- Área de texto onde o aluno digita o código -->
+            <textarea id="codigoInput" placeholder="// Planeje sua rota...
+frente(3);
+subir(2);
+frente(4);"></textarea>
+
+            <!-- Botões de ação -->
+            <div class="button-group">
+                <button id="btnIniciar">▶ Compilar e Iniciar</button>
+                <button id="btnReiniciarManual" class="btn-danger">🔄 Resetar Nível</button>
+            </div>
+
+            <!-- Dica do nível atual -->
+            <div class="hint-box" id="hintBox">
+                <strong>💡 Dica:</strong> <span id="hintText">Use frente() e subir() para alcançar o objetivo!</span>
+            </div>
+        </div>
+
+        <!-- PAINEL DIREITO: Canvas do jogo, HUD e histórico -->
+        <div class="panel-game">
+            <!-- HUD: informações de nível, combustível e cristais -->
+            <div class="hud">
+                <span id="txtNivel">Nível: 1/6</span>
+                <span id="txtCombustivel">⛽ Combustível: 100%</span>
+                <span id="txtPontos">💎 Cristais: 0</span>
+            </div>
+
+            <!-- Canvas principal do jogo (maior que o original) -->
+            <div class="canvas-wrapper">
+                <canvas id="gameCanvas" width="700" height="500"></canvas>
+            </div>
+
+            <!-- Painel de histórico de execução -->
+            <div class="history-panel">
+                <div class="history-title">📜 Histórico de Execução (Console):</div>
+                <div id="historyLog" class="history-log">Aguardando inicialização dos motores...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BOTÃO DISCRETO: permite rever a introdução -->
+    <button id="btnReverIntro" class="btn-rever-intro" title="Rever introdução">❔</button>
+
+    <script src="game.js"></script>
+</body>
+</html>
